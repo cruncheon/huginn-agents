@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "name": "omnom",
+  "description": "No description provided",
+  "source_url": false,
+  "guid": "2426b24b4f93c8b4028b5ab892aabb05",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#5bc0de",
+  "icon": "gear",
+  "exported_at": "2021-07-12T18:22:19Z",
+  "agents": [
+    {
+      "type": "Agents::DeDuplicationAgent",
+      "name": "Duplicate Check",
+      "disabled": false,
+      "guid": "0203e4a4b224ef58895217bcec7bd162",
+      "options": {
+        "property": "{{url}}",
+        "lookback": "0",
+        "expected_update_period_in_days": "1"
+      },
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "Query for Malware News",
+      "disabled": false,
+      "guid": "25ac76e845e735384403958f754eec0a",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "http://192.168.101.18:8080/search?q=malware&categories=news&language=en-US&format=json",
+        "type": "json",
+        "mode": "on_change",
+        "extract": {
+          "url": {
+            "path": "results.[*].url"
+          },
+          "title": {
+            "path": "results.[*].title"
+          },
+          "content": {
+            "path": "results.[*].content"
+          },
+          "engine": {
+            "path": "results.[*].engine"
+          },
+          "category": {
+            "path": "results.[*].category"
+          }
+        }
+      },
+      "schedule": "every_2h",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::PostAgent",
+      "name": "Send to OpenSearch",
+      "disabled": false,
+      "guid": "8be69242dacbc555148babdd520db7ee",
+      "options": {
+        "post_url": "http://192.168.101.18:9200/{{category}}-{{'now' | date: '%Y-%m'}}/_doc",
+        "expected_receive_period_in_days": "1",
+        "content_type": "json",
+        "method": "post",
+        "payload": {
+          "url": "{{ url }}",
+          "title": "{{ title }}",
+          "content": "{{ content }}"
+        },
+        "headers": {
+        },
+        "emit_events": "true",
+        "no_merge": "false",
+        "output_mode": "clean"
+      },
+      "schedule": "never",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "Query for Ransomware News",
+      "disabled": false,
+      "guid": "a88c5d71a59951384e1e09e963f92939",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "http://192.168.101.18:8080/search?q=ransomware&categories=news&language=en-US&format=json",
+        "type": "json",
+        "mode": "on_change",
+        "extract": {
+          "url": {
+            "path": "results.[*].url"
+          },
+          "title": {
+            "path": "results.[*].title"
+          },
+          "content": {
+            "path": "results.[*].content"
+          },
+          "engine": {
+            "path": "results.[*].engine"
+          },
+          "category": {
+            "path": "results.[*].category"
+          }
+        }
+      },
+      "schedule": "every_2h",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::PostAgent",
+      "name": "Send to Wayback Machine",
+      "disabled": false,
+      "guid": "d5cec8784a2bd4f06a61c690917db10e",
+      "options": {
+        "post_url": "https://web.archive.org/save+{{ url }}",
+        "expected_receive_period_in_days": "365",
+        "content_type": "form",
+        "method": "get",
+        "emit_events": "true",
+        "no_merge": "false"
+      },
+      "schedule": "never",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "Query for Data Breach News",
+      "disabled": false,
+      "guid": "eabce33c9b70cf0c48fcd88d6f7b9c5c",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "http://192.168.101.18:8080/search?q=data%20breach&categories=news&language=en-US&format=json",
+        "type": "json",
+        "mode": "on_change",
+        "extract": {
+          "url": {
+            "path": "results.[*].url"
+          },
+          "title": {
+            "path": "results.[*].title"
+          },
+          "content": {
+            "path": "results.[*].content"
+          },
+          "engine": {
+            "path": "results.[*].engine"
+          },
+          "category": {
+            "path": "results.[*].category"
+          }
+        }
+      },
+      "schedule": "every_2h",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    }
+  ],
+  "links": [
+    {
+      "source": 0,
+      "receiver": 2
+    },
+    {
+      "source": 0,
+      "receiver": 4
+    },
+    {
+      "source": 1,
+      "receiver": 0
+    },
+    {
+      "source": 3,
+      "receiver": 0
+    },
+    {
+      "source": 5,
+      "receiver": 0
+    }
+  ],
+  "control_links": [
+
+  ]
+}
